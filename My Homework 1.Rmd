@@ -1,0 +1,315 @@
+---
+title: "My Homework 1"
+author: "Bin Liu"
+date: "2023-09-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Importing excel file and adding header row
+
+```{r}
+library(readxl)
+Typical_Employee_Survey_Data <- read_excel("C:/Users/charl/Desktop/Rutgers MBA Courses/Business Forecasting/Homeworks/Typical Employee Survey Data.xlsx", 
+    col_names = c("Age","Gender","Job_Satisfaction","Job_Characteristics","Years_of_Employment","Promotion_in_Five_Years","Decision_Making_Involvement","Budgetary_Decision","Pride_in_Organization","Job_Loyalty","Workplace_Relationship"))
+View(Typical_Employee_Survey_Data)
+
+names(Typical_Employee_Survey_Data)
+head(Typical_Employee_Survey_Data)
+tail(Typical_Employee_Survey_Data)
+```
+
+# Summary and Boxplot
+
+### Age
+
+```{r}
+summary(Typical_Employee_Survey_Data$Age)
+fivenum(Typical_Employee_Survey_Data$Age)
+boxplot(Typical_Employee_Survey_Data$Age)
+```
+
+### Gender
+
+```{r}
+summary(Typical_Employee_Survey_Data$Gender)
+fivenum(Typical_Employee_Survey_Data$Gender)
+boxplot(Typical_Employee_Survey_Data$Gender)
+```
+
+### Job_Satisfacation
+
+```{r}
+summary(Typical_Employee_Survey_Data$Job_Satisfaction)
+fivenum(Typical_Employee_Survey_Data$Job_Satisfaction)
+boxplot(Typical_Employee_Survey_Data$Job_Satisfaction)
+```
+
+### Job_Characteristics
+
+```{r}
+summary(Typical_Employee_Survey_Data$Job_Characteristics)
+fivenum(Typical_Employee_Survey_Data$Job_Characteristics)
+boxplot(Typical_Employee_Survey_Data$Job_Characteristics)
+```
+
+### Years_of_Employment
+
+```{r}
+summary(Typical_Employee_Survey_Data$Years_of_Employment)
+fivenum(Typical_Employee_Survey_Data$Years_of_Employment)
+boxplot(Typical_Employee_Survey_Data$Years_of_Employment)
+```
+
+### Promotion_in_Five_Years
+
+```{r}
+summary(Typical_Employee_Survey_Data$Promotion_in_Five_Years)
+fivenum(Typical_Employee_Survey_Data$Promotion_in_Five_Years)
+boxplot(Typical_Employee_Survey_Data$Promotion_in_Five_Years)
+```
+
+### Decision_Making_Involvement
+
+```{r}
+summary(Typical_Employee_Survey_Data$Decision_Making_Involvement)
+fivenum(Typical_Employee_Survey_Data$Decision_Making_Involvement)
+boxplot(Typical_Employee_Survey_Data$Decision_Making_Involvement)
+```
+
+### Budgetary_Decision
+
+```{r}
+summary(Typical_Employee_Survey_Data$Budgetary_Decision)
+fivenum(Typical_Employee_Survey_Data$Budgetary_Decision)
+boxplot(Typical_Employee_Survey_Data$Budgetary_Decision)
+```
+
+### Pride_in_Organization
+
+```{r}
+summary(Typical_Employee_Survey_Data$Pride_in_Organization)
+fivenum(Typical_Employee_Survey_Data$Pride_in_Organization)
+boxplot(Typical_Employee_Survey_Data$Pride_in_Organization)
+```
+
+### Job_Loyalty
+
+```{r}
+summary(Typical_Employee_Survey_Data$Job_Loyalty)
+fivenum(Typical_Employee_Survey_Data$Job_Loyalty)
+boxplot(Typical_Employee_Survey_Data$Job_Loyalty)
+```
+
+### Workplace_Relationship
+
+```{r}
+summary(Typical_Employee_Survey_Data$Workplace_Relationship)
+fivenum(Typical_Employee_Survey_Data$Workplace_Relationship)
+boxplot(Typical_Employee_Survey_Data$Workplace_Relationship)
+```
+
+# Converting the columns that need to be converted to Factors
+
+### Converting Gender into a Factor
+
+```{r}
+Typical_Employee_Survey_Data$Gender <- as.factor(Typical_Employee_Survey_Data$Gender)
+class(Typical_Employee_Survey_Data$Gender)
+```
+
+### Converting Job_Satisfaction into a Factor
+
+```{r}
+Typical_Employee_Survey_Data$Job_Satisfaction <- as.factor(Typical_Employee_Survey_Data$Job_Satisfaction)
+class(Typical_Employee_Survey_Data$Job_Satisfaction)
+```
+
+### Converting Job_Characteristics into a Factor
+
+```{r}
+Typical_Employee_Survey_Data$Job_Characteristics <- as.factor(Typical_Employee_Survey_Data$Job_Characteristics)
+class(Typical_Employee_Survey_Data$Job_Characteristics)
+```
+
+### Converting Promotion_in_Five_Years into a Factor
+
+```{r}
+Typical_Employee_Survey_Data$Promotion_in_Five_Years <- as.factor(Typical_Employee_Survey_Data$Promotion_in_Five_Years)
+class(Typical_Employee_Survey_Data$Promotion_in_Five_Years)
+```
+
+### Converting Decision_Making_Involvement into a Factor
+
+```{r}
+Typical_Employee_Survey_Data$Decision_Making_Involvement <- as.factor(Typical_Employee_Survey_Data$Decision_Making_Involvement)
+class(Typical_Employee_Survey_Data$Decision_Making_Involvement)
+```
+
+### Converting Budgetary_Decision into a Factor
+
+```{r}
+Typical_Employee_Survey_Data$Budgetary_Decision <- as.factor(Typical_Employee_Survey_Data$Budgetary_Decision)
+class(Typical_Employee_Survey_Data$Budgetary_Decision)
+```
+
+### Converting Pride_in_Organization into a Factor
+
+```{r}
+Typical_Employee_Survey_Data$Pride_in_Organization <- as.factor(Typical_Employee_Survey_Data$Pride_in_Organization)
+class(Typical_Employee_Survey_Data$Pride_in_Organization)
+```
+
+### Converting Job_Loyalty into a Factor
+
+```{r}
+Typical_Employee_Survey_Data$Job_Loyalty <- as.factor(Typical_Employee_Survey_Data$Job_Loyalty)
+class(Typical_Employee_Survey_Data$Job_Loyalty)
+```
+
+### Converting Workplace_Relationship into a Factor
+
+```{r}
+Typical_Employee_Survey_Data$Workplace_Relationship <- as.factor(Typical_Employee_Survey_Data$Workplace_Relationship)
+class(Typical_Employee_Survey_Data$Workplace_Relationship)
+```
+
+### Showing the columns changed to Factors
+
+```{r}
+head(Typical_Employee_Survey_Data)
+```
+
+# Plot the right visual for each column
+
+### Age - Histogram
+
+```{r}
+hist(Typical_Employee_Survey_Data$Age, main = "Histogram of Age", xlab = "Age", ylab = "Number of Employee", col = "Skyblue")
+```
+
+### Gender - Bar chart
+
+```{r}
+barplot(table(Typical_Employee_Survey_Data$Gender), main = "Bar Chart of Gender", xlab = "Gender (1=Male, 2=Female)", ylab = "Number of Employee", col = "Plum")
+```
+
+### Job_Satisfaction - Bar Chart
+
+```{r}
+barplot(table(Typical_Employee_Survey_Data$Job_Satisfaction), main = "Bar Chart of Job Satisfaction", xlab = "Job Satisfaction (1=Very Satisfied, 4=Very Dissatisfied)", ylab = "Number of Employee", col = "Yellow")
+```
+
+### Job_Characteristics - Pie chart
+
+```{r}
+pie(table(Typical_Employee_Survey_Data$Job_Characteristics), main = "Pie Chart of Job Characteristics", labels = c("High Income","No Danger of Beinig Fired","Flexible Hours","Opportunities for Advancement","Enjoying the Work"))
+```
+
+### Years_of_Employment - Histogram
+
+```{r}
+hist(Typical_Employee_Survey_Data$Years_of_Employment, main = "Histogram of Years of Employment", xlab = "Years of Employment", ylab = "Number of Employee", col = "Green")
+```
+
+### Promotion_in_Five_Years - Pie chart
+
+```{r}
+pie(table(Typical_Employee_Survey_Data$Promotion_in_Five_Years), main = "Pie Chart of Promotion in Five Years", labels = c("Very Likely","Likely","Not Sure","Unlikely","Very Unlikely"))
+```
+
+### Decision_Making_Involvement - Bar chart
+
+```{r}
+barplot(table(Typical_Employee_Survey_Data$Decision_Making_Involvement), main = "Bar Chart of Decision Making Involvement", xlab = "Decision Making Involvement (1=Always, 5=Never)", ylab = "Number of Employee", col = "Aquamarine")
+```
+
+### Budgetary_Decision - Pie chart
+
+```{r}
+pie(table(Typical_Employee_Survey_Data$Budgetary_Decision), main = "Pie Chart of Budgetary Decision", labels = c("Yes","No"))
+```
+
+### Pride_in_Organization - Bar chart
+
+```{r}
+plot(Typical_Employee_Survey_Data$Pride_in_Organization, main = "Bar chart Pride in Organization", xlab = "Pride in Organization (1=Very Pround, 4=Not At All Proud)", ylab = "Number of Employee", col = "Lightsalmon")
+```
+
+### Job_Loyalty - Pie chart
+
+```{r}
+pie(table(Typical_Employee_Survey_Data$Job_Loyalty), main = "Pie Chart of Job Loyalty", labels = c("Very Likely","Likely","Not Sure","Unlikely","Very Unlikely"))
+```
+
+### Workplace_Relationship - Bar chart
+
+```{r}
+barplot(table(Typical_Employee_Survey_Data$Workplace_Relationship), main = "Bar Chart of Workplace Relationship", xlab = "Workplace Relationship (1=Very Good, 5=Very Bad)", ylab = "Number of Employee", col = "Mediumpurple")
+```
+
+# Scatter Plots for relationships
+
+### Years of Employment vs Age
+
+```{r}
+plot(Typical_Employee_Survey_Data$Age, Typical_Employee_Survey_Data$Years_of_Employment, main = "Scatter Plot of Years of Employment vs Age", xlab = "Age", ylab = "Years of Employment", col = "Blue")
+```
+
+### Gender vs Age
+
+```{r}
+plot(Typical_Employee_Survey_Data$Age, Typical_Employee_Survey_Data$Gender, main = "Scatter Plot of Gender vs Age", xlab = "Age", ylab = "Gender (1=Male, 2=Female)", col = "Red")
+```
+
+### Job Satisfication vs Age
+
+```{r}
+plot(Typical_Employee_Survey_Data$Age, Typical_Employee_Survey_Data$Job_Satisfaction, main = "Scatter Plot of Job Satisfication vs Age", xlab = "Age", ylab = "Job Satisfication (1=Very Satisfied, 4=Very Dissatisfied)", col = "Purple")
+```
+
+### Promotion in Five Years vs Age
+
+```{r}
+plot(Typical_Employee_Survey_Data$Age, Typical_Employee_Survey_Data$Promotion_in_Five_Years, main = "Scatter Plot of Promotion in Five Years vs Age", xlab = "Age", ylab = "Promotion in Five Years (1=Very Likely, 5=Very Unlikely)", col = "Brown")
+```
+
+### Gender vs Years of Employment
+
+```{r}
+plot(Typical_Employee_Survey_Data$Years_of_Employment, Typical_Employee_Survey_Data$Gender, main = "Scatter Plot of Gender vs Years of Employmentr", xlab = "Years of Employment", ylab = "Gender (1=Male, 2=Female)", col = "Hotpink")
+```
+
+### Promotion in Five Years vs Years of Employment 
+
+```{r}
+plot(Typical_Employee_Survey_Data$Years_of_Employment, Typical_Employee_Survey_Data$Promotion_in_Five_Years, main = "Scatter Plot of Promotion in Five Years vs Years of Employment", xlab = "Years of Employment", ylab = "Promotion in Five Years (1=Very Likely, 5=Very Unlikely)", col = "Orange")
+```
+
+### Job Loyalty vs Years of Employment 
+
+```{r}
+plot(Typical_Employee_Survey_Data$Years_of_Employment, Typical_Employee_Survey_Data$Job_Loyalty, main = "Scatter Plot of Job Loyalty vs Years of Employment", xlab = "Years of Employment", ylab = "Job Loyalty (1=Very likely, 5=Very Unlikely)", col = "Darkviolet")
+```
+
+### Job Loyalty vs Pride in Organization
+
+```{r}
+plot(as.numeric(Typical_Employee_Survey_Data$Pride_in_Organization), as.numeric (Typical_Employee_Survey_Data$Job_Loyalty), main = "Scatter Plot of Job Loyalty vs Pride in Organization", xlab = "Pride in Organization (1=Very Proud, 5=Not At All Pround)", ylab = "Job Loyalty (1=Very likely, 5=Very Unlikely)", col = "Olivedrab")
+```
+
+### Job Loyalty vs Workplace Relationship
+
+```{r}
+plot(as.numeric(Typical_Employee_Survey_Data$Workplace_Relationship), as.numeric (Typical_Employee_Survey_Data$Job_Loyalty), main = "Scatter Plot of Job Loyalty vs Workplace Relationship", xlab = "Workplace Relationship (1=Very Good, 5=Very Bad)", ylab = "Job Loyalty (1=Very Likely, 5= Very Unlikely)", col = "Magenta4")
+```
+
+### Number of Employee who are proud of the organization vs Number of Employe who are satisfied with their Job
+
+```{r}
+plot(as.numeric(Typical_Employee_Survey_Data$Pride_in_Organization), main="Number of employee who are pround vs satisfied with thier job", col="Red", xlab="Number of Employee", ylab="Job Satisfaction (Blue), Pride in Organization (Red)")
+points(as.numeric(Typical_Employee_Survey_Data$Job_Satisfaction), col="Blue")
+```
