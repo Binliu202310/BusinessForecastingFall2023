@@ -1,0 +1,165 @@
+---
+title: "ARIMA"
+author: "Bin Liu"
+date: "2023-11-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+# Importing data for Electric Vehicle Popultion Size History
+
+```{r}
+library(readr)
+Electric_Vehicle_Population_Size_History <- read_csv("~/Documents/Fall 2023 - Business Forecasting/Datasets/Electric_Vehicle_Population_Size_History.csv")
+View(Electric_Vehicle_Population_Size_History)
+``` 
+
+# Creating a time series for Electric Vehicle (EV) Total
+
+```{r}
+library(fpp)
+library(fpp2)
+library(TTR)
+
+Electric_Vehicle_Population_Total_ts <- ts(Electric_Vehicle_Population_Size_History$`Electric Vehicle (EV) Total`, frequency = 12, start = c(2017,1))
+Electric_Vehicle_Population_Total_ts
+
+attributes (Electric_Vehicle_Population_Total_ts)
+plot(Electric_Vehicle_Population_Total_ts)
+Acf(Electric_Vehicle_Population_Total_ts)
+```
+
+## ADF test
+
+```{r}
+adf.test(Electric_Vehicle_Population_Total_ts)
+```
+
+## Kipps test
+
+```{r}
+kpss.test(Electric_Vehicle_Population_Total_ts)
+```
+
+## NDIFFS 
+
+```{r}
+ndiffs(Electric_Vehicle_Population_Total_ts)
+```
+
+## tsdisplay plots ACF, PACF and timeseries plot together 
+
+```{r}
+tsdisplay(Electric_Vehicle_Population_Total_ts)
+```
+
+## Take first order differences as indiciated by ndiffs function
+
+```{r}
+Electric_Vehicle_Population_Total_ts_diff1 <- diff(Electric_Vehicle_Population_Total_ts, differences = 1)
+```
+
+## See if more differences is needed and how plots look
+
+```{r}
+tsdisplay(Electric_Vehicle_Population_Total_ts_diff1)
+ndiffs(Electric_Vehicle_Population_Total_ts_diff1)
+kpss.test(Electric_Vehicle_Population_Total_ts_diff1)
+adf.test(Electric_Vehicle_Population_Total_ts_diff1)
+```
+
+## Take second order differences as indicated by ndiffs function
+
+```{r}
+Electric_Vehicle_Population_Total_ts_diff2 <- diff(Electric_Vehicle_Population_Total_ts, differences = 2)
+tsdisplay(Electric_Vehicle_Population_Total_ts_diff2)
+ndiffs(Electric_Vehicle_Population_Total_ts_diff2)
+kpss.test(Electric_Vehicle_Population_Total_ts_diff2)
+adf.test(Electric_Vehicle_Population_Total_ts_diff2)
+```
+
+## We now know that the d part in ARIMA (p,d,q) is 2. Now let's find p and q
+
+```{r}
+acf(Electric_Vehicle_Population_Total_ts_diff2, lag.max=20)
+Acf(Electric_Vehicle_Population_Total_ts_diff2, lag.max=20)
+```
+
+## Plot a correlogram
+
+```{r}
+Acf(Electric_Vehicle_Population_Total_ts_diff2, lag.max=20)
+Acf(Electric_Vehicle_Population_Total_ts_diff2, lag.max=20, plot=FALSE)
+```
+
+## Plot a partial correlogram
+
+```{r}
+Pacf(Electric_Vehicle_Population_Total_ts_diff2, lag.max=20)
+Pacf(Electric_Vehicle_Population_Total_ts_diff2, lag.max=20, plot=FALSE)
+```
+
+## Auto ARIMA, BIC and AIC
+
+```{r}
+auto.arima(Electric_Vehicle_Population_Total_ts)
+auto_fit <- auto.arima(Electric_Vehicle_Population_Total_ts)
+auto_fit
+attributes(auto_fit)
+```
+
+## Use arima and pass the values
+
+```{r}
+Electric_Vehicle_Population_Total_ts_arima <- arima(Electric_Vehicle_Population_Total_ts, order=c(0,2,1))
+Electric_Vehicle_Population_Total_ts_arima
+
+fit_Arima <- Arima(Electric_Vehicle_Population_Total_ts, order=c(0,2,1))
+fit_Arima
+```
+
+## Forecast with different confidence intervals and different h values
+
+```{r}
+forecast(fit_Arima, h=5, level = c(99.5))
+forecast(fit_Arima, h=5)
+forecast(fit_Arima, h=12, level = c(99.5))
+forecast(fit_Arima, h=12)
+plot(forecast(fit_Arima, h=5))
+plot(forecast(fit_Arima, h=12))
+```
+
+## Residual analysis for ARIMA forecast model
+
+```{r}
+Acf(fit_Arima$residuals)
+Box.test(residuals(fit_Arima), lag=20, type="Ljung")
+plot.ts(residuals(fit_Arima))
+hist(fit_Arima$residuals)
+tsdiag(fit_Arima)
+```
+
+## Simulation for what ACF and PACF for ARIMA looks like
+
+```{r}
+sim.ar <- arima.sim(list(ar=c(0.4,0.4)), n=1000)
+sim.ma <- arima.sim(list(ma=c(0.6,-0.4)), n=1000)
+par(mfrow=c(2,2))
+Acf(sim.ar)
+Acf(sim.ma)
+Pacf(sim.ar)
+Pacf(sim.ma)
+```
