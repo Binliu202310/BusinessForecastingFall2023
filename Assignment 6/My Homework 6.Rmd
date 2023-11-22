@@ -1,0 +1,483 @@
+---
+title: "My Homework 6"
+author: "Bin Liu"
+date: "2023-11-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Importing data for Electric Vehicle Popultion Size History
+
+```{r}
+library(readr)
+Electric_Vehicle_Population_Size_History <- read_csv("~/Documents/Fall 2023 - Business Forecasting/Datasets/Electric_Vehicle_Population_Size_History.csv")
+View(Electric_Vehicle_Population_Size_History)
+``` 
+
+# Creating a time series for Electric Vehicle (EV) Total
+
+```{r}
+library(fpp)
+library(fpp2)
+library(TTR)
+
+Electric_Vehicle_Population_Total_ts <- ts(Electric_Vehicle_Population_Size_History$`Electric Vehicle (EV) Total`, frequency = 12, start = c(2017,1))
+Electric_Vehicle_Population_Total_ts
+
+attributes (Electric_Vehicle_Population_Total_ts)
+plot(Electric_Vehicle_Population_Total_ts)
+Acf(Electric_Vehicle_Population_Total_ts)
+```
+
+# Forecasting Models
+
+## Average Model
+
+#### The Average Model takes the average of all historical points. The plot shows that the avearge of the total registration of electric vehicles in the State of Washington is 66,273.58. This model will take this average to forecast for the next 24 months, which is the blue straight line in the plot. The shaded area shows the confidence interval that the future values may lie between this area. As we can see from the plot, this is not a good forecasting model for this data based on the trend since the forecasted values are way below the current trend.
+
+```{r}
+mean_forecast <- meanf(Electric_Vehicle_Population_Total_ts, 24)
+plot(mean_forecast)
+Acf(mean_forecast$residuals)
+attributes(mean_forecast)
+summary(mean_forecast)
+```
+
+## Naive Model
+
+#### The Naive Model takes the last month's data to forecast for the next 24 months as shown in the blue straight line in the plot. The confidence interval shows the future values may lie within this shaded area based on this prediction. This forecasting model does not appear to be a good model based on the trend. 
+
+```{r}
+naive_forecast <- naive(Electric_Vehicle_Population_Total_ts, 24)
+plot(naive_forecast)
+Acf(naive_forecast$residuals)
+summary(naive_forecast)
+```
+
+## Random Walk Forecast (RWF)
+
+#### Similar to the Naive Model, the Random Walk Forecast Model also takes the last month's data to forecast for the values in the next 24 months with the same values for the confidence interval. Again, it is not considered a good forecasting model based on the trend. 
+
+```{r}
+rwf_forecast <- rwf(Electric_Vehicle_Population_Total_ts,24)
+plot(rwf_forecast)
+Acf(rwf_forecast$residuals)
+summary(rwf_forecast)
+```
+
+## A drift with RWF
+
+#### The Random Walk Forecast Model with a drift shows an upward trend for the next 24 months. The confidence interval also has an increased values as opposed to the Random Walk Forecast Model. This shows a better forecast based on the trend of the time series.
+
+```{r}
+rwf_forecast_drift <- rwf(Electric_Vehicle_Population_Total_ts,24, drift=TRUE)
+plot(rwf_forecast_drift)
+Acf(rwf_forecast_drift$residuals)
+summary(rwf_forecast_drift)
+```
+
+## Seasonal Naive
+
+#### The time series shows an upward trend and does not show any seasonality trend. Therefore, the Seasnoal Naive Model is not a good model. Based on the plot, it appears that it takes the upward trend from the recent months then a downward trend, then a similar upward trend again to forecast the values for the next 24 months. This model does not represent the increasing upward trend of the time series.
+
+```{r}
+snaive_forecast <- snaive(Electric_Vehicle_Population_Total_ts,24)
+plot(snaive_forecast)
+Acf(snaive_forecast$residuals)
+summary(snaive_forecast)
+```
+
+## Moving Averages
+
+### Moving average with order of 3
+
+#### Based on the ACF, it shows that the recent data are more significant than the historical data. Therefore, the lower order moving average model provides a better forecast than higher order moving average model since the larger weight is given to the more recent period.
+
+```{r}
+MA3_forecast <- ma(Electric_Vehicle_Population_Total_ts,order=3)
+plot(MA3_forecast)
+```
+
+### Moving average with order of 6
+
+#### The moving average model with order of 6 still provides a good forecast for the upward trend although it smooths out the data more than the previous model with order of 3. It gives more weight to more historical data which appears to be less significant. This is not as good as the previous model with the lower order. 
+
+```{r}
+MA6_forecast <- ma(Electric_Vehicle_Population_Total_ts,order=6)
+plot(MA6_forecast)
+```
+
+### Moving average with order of 12
+
+#### The larger order of the moving average model, the smoother effect on the plot. As we can see from the plot, it gives more weight to more historical data as comparing to the moving average model with order of 3 and 6. Therefore, it is not as good as the previous two models with the lower order. 
+
+```{r}
+MA12_forecast <- ma(Electric_Vehicle_Population_Total_ts,order=12)
+plot(MA12_forecast)
+```
+
+### Moving average with order of 18
+
+#### As mentioned above, the larger order of moving average puts more weight on more historical data. Therefore, the moving average with large order does not represent well for this time series.
+
+```{r}
+MA18_forecast <- ma(Electric_Vehicle_Population_Total_ts,order=18)
+plot(MA18_forecast)
+```
+
+## Exponential 
+
+```{r}
+ets_forecast <- ets(Electric_Vehicle_Population_Total_ts)
+plot(ets_forecast)
+```
+
+## Holtwinters
+
+#### The Holtwinters Model without any smoothing constants provides a pretty good fit to the original data plot. The residuls are very small based on the comparison of the actual and forecasted data (black line vs red line).
+
+```{r}
+HW_forecast <- HoltWinters(Electric_Vehicle_Population_Total_ts)
+plot(HW_forecast)
+attributes(HW_forecast)
+summary(HW_forecast)
+plot(HW_forecast)
+```
+
+#### The Holtwinters Model with exponential smoothing for trend and non-seasonal model provides a decent fit. However, the residual are greater than the previous model with no smoothing constants. 
+
+
+```{r}
+SSE_Simple <- HoltWinters(Electric_Vehicle_Population_Total_ts,beta=FALSE,gamma=FALSE)
+attributes(SSE_Simple)
+plot(SSE_Simple)
+SSE_Simple$SSE
+head(SSE_Simple$fitted)
+```
+#### The Holtwinters Model with non-exponential smoothing for trend and non-seasonal model provides a pretty nice fit and the residuals are small among the acutal and forecasted data.
+
+```{r}
+SSE_Simple_1 <- HoltWinters(Electric_Vehicle_Population_Total_ts,beta=TRUE,gamma=FALSE)
+attributes(SSE_Simple_1)
+plot(SSE_Simple_1)
+SSE_Simple_1$SSE
+head(SSE_Simple_1$fitted)
+```
+#### The Holtwinters Model with non-exponential smoothing for trend and seasonal model also provides a pretty nice fit and the residuals are small among the acutal and forecasted data.
+
+```{r}
+SSE_Simple_2 <- HoltWinters(Electric_Vehicle_Population_Total_ts,beta=TRUE,gamma=TRUE)
+attributes(SSE_Simple_2)
+plot(SSE_Simple_2)
+SSE_Simple_2$SSE
+head(SSE_Simple_2$fitted)
+```
+
+#### The Holtwinters Model with exponential smoothing for trend and seasonal model provides quite similar forecast with the exponential smoothing for trend and non-seaonal model. In both models, the residuals are greater than the other Holtwinters models displayed above. 
+
+```{r}
+SSE_Simple_3 <- HoltWinters(Electric_Vehicle_Population_Total_ts,beta=FALSE,gamma=TRUE)
+attributes(SSE_Simple_3)
+plot(SSE_Simple_3)
+SSE_Simple_3$SSE
+head(SSE_Simple_2$fitted)
+```
+
+# Plot all in a single chart
+
+```{r}
+plot(mean_forecast, col="black")
+lines(naive_forecast$mean,col="red")
+lines(rwf_forecast$mean, col="green")
+lines(rwf_forecast_drift$mean, col="hotpink")
+lines(snaive_forecast$mean, col="blue")
+lines(MA6_forecast, col="purple")
+lines(MA12_forecast, col="orange")
+lines(MA18_forecast, col="yellow")
+```
+
+# Decomposition
+
+```{r}
+ets_forecast <- ets(Electric_Vehicle_Population_Total_ts)
+plot(ets_forecast)
+attributes(ets_forecast)
+ets_forecast$mse
+```
+
+# Accuracy measures for different forecasting models
+
+#### I pick the Mean Absolute Percentage Error (MAPE) as the accuracy measure for this time series. By comparing the MAPE with different models listed below, the Moving Average with order of 3 shows the least MAPE. This indicates that the Moving Average with order of 3 is the best model based on the accuracy comparison.
+
+```{r}
+library(forecast)
+```
+
+## Average Model
+
+```{r}
+accuracy(mean_forecast)
+```
+
+## Naive Model
+
+```{r}
+accuracy(naive_forecast)
+```
+
+## Random Walk Forecast Model
+
+```{r}
+accuracy(rwf_forecast)
+```
+
+## Random Walk Forecast with a Drift Model
+
+```{r}
+accuracy(rwf_forecast_drift)
+```
+
+## Seasonal Naive Model
+
+```{r}
+accuracy(snaive_forecast)
+```
+
+## Moving Averages with different orders (3, 6, 12 and 18)
+
+```{r}
+accuracy(MA3_forecast,Electric_Vehicle_Population_Total_ts, h=24)
+accuracy(MA6_forecast,Electric_Vehicle_Population_Total_ts, h=24)
+accuracy(MA12_forecast,Electric_Vehicle_Population_Total_ts, h=24)
+accuracy(MA18_forecast,Electric_Vehicle_Population_Total_ts, h=24)
+```
+
+## Holtwinters with different combinations of smoothing trends and seasonal models
+
+```{r}
+forecast_ets_hw <- forecast(HW_forecast, h=24)
+accuracy(forecast_ets_hw)
+
+forecast_ets_SSE_Simple <- forecast(SSE_Simple, h=24)
+accuracy(forecast_ets_SSE_Simple)
+
+forecast_ets_SSE_Simple_1 <- forecast(SSE_Simple_1, h=24)
+accuracy(forecast_ets_SSE_Simple_1)
+
+forecast_ets_SSE_Simple_2 <- forecast(SSE_Simple_2, h=24)
+accuracy(forecast_ets_SSE_Simple_2)
+
+forecast_ets_SSE_Simple_3 <- forecast(SSE_Simple_3, h=24)
+accuracy(forecast_ets_SSE_Simple_3)
+```
+
+# Seasonal Decomposition of Time Series by Loess
+
+```{r}
+stl_decomp <- stl(Electric_Vehicle_Population_Total_ts, s.window = "periodic")
+plot(stl_decomp)
+attributes (stl_decomp)
+stl_decomp$weights
+stl_decomp$call
+stl_decomp$win
+stl_decomp$deg
+stl_decomp$jump
+stl_decomp$inner
+stl_decomp$outer
+```
+
+# Seasonal adjustment 
+
+```{r}
+tmp <- seasadj(stl_decomp)
+plot(Electric_Vehicle_Population_Total_ts, col="black")
+lines(tmp, col="red")
+```
+
+# Forecast of Seasonal Decomposition of Time Series by Loess
+
+```{r}
+f_stl <- forecast(stl_decomp)
+f_stl <- forecast(stl_decomp, h=24)
+plot(f_stl)
+accuracy(f_stl)
+attributes(f_stl)
+Acf(f_stl$residuals)
+```
+
+# Classical Seasonal Decomposition by Moving Averages
+
+```{r}
+decomp_ev <- decompose(Electric_Vehicle_Population_Total_ts)
+plot(decomp_ev)
+attributes (decomp_ev)
+```
+
+# Classical Seasonal Decomposition by Moving Averages - Multiplicative
+
+```{r}
+decomp_evm <- decompose(Electric_Vehicle_Population_Total_ts, type="multiplicative")
+plot(decomp_evm)
+attributes (decomp_evm)
+```
+
+# Forecast of Classical Seasonal Decomposition by Moving Averages
+
+#### By using two different seasonal decomposition methods, the forecasting accuracy measure for Classical Seasonal Decomposition by Moving Averages has lower MAPE. The ACF plot for residuals also looks better for Classical Seasonal Decomposition by Moving Averages as the lines are all within the blue dash lines on the plot.
+
+```{r}
+f_decomp <- forecast(seasadj(decomp_ev), h=24)
+plot(f_decomp)
+accuracy(f_decomp)
+Acf(f_decomp$residuals)
+```
+
+# ARIMA Model
+
+## ADF test
+
+#### The p-value for ADF test is 0.99 which is greater than 0.05. This indicates that the differencing is required based on ADF test. 
+
+```{r}
+adf.test(Electric_Vehicle_Population_Total_ts)
+```
+
+## Kipps test
+
+#### The p-value for Kipps test is 0.01 which is less than 0.05. This indicates that the differencing is required based on Kipps test. 
+
+```{r}
+kpss.test(Electric_Vehicle_Population_Total_ts)
+```
+
+## NSDIFFS for seasonal data
+
+#### NSDIFFS works for seasonal data. Since this time series doesn't show any seasonality, therefore, the result turns out to be 0 based on NSDIFFS function. 
+
+```{r}
+nsdiffs(Electric_Vehicle_Population_Total_ts)
+```
+
+## NDIFFS for non-seasonal data
+
+#### NDIFFS function shows that this time series requires 2 differences to become stationary. 
+
+```{r}
+ndiffs(Electric_Vehicle_Population_Total_ts)
+```
+
+## tsdisplay plots ACF, PACF and timeseries plot together 
+
+```{r}
+tsdisplay(Electric_Vehicle_Population_Total_ts)
+```
+
+## Take first order differences as indiciated by NDIFFS function
+
+```{r}
+Electric_Vehicle_Population_Total_ts_diff1 <- diff(Electric_Vehicle_Population_Total_ts, differences = 1)
+```
+
+## See if more differences is needed and how plots look
+
+#### The plot for 1st order difference shows that the time series becomes quite stationary from 2017 to 2021 then slight upward trending after year 2021. Based on ACF, the historical data becomes less and less significant. Based on PACF, the first number for P may 1, 2, or 3 since the first, second and third lags are above the range line. 
+
+```{r}
+tsdisplay(Electric_Vehicle_Population_Total_ts_diff1)
+ndiffs(Electric_Vehicle_Population_Total_ts_diff1)
+kpss.test(Electric_Vehicle_Population_Total_ts_diff1)
+adf.test(Electric_Vehicle_Population_Total_ts_diff1)
+```
+
+## Take second order differences as indicated by NDIFFS function
+
+#### Based on the 2nd order of differencing, the time series is now stationary. The ACF has positive and negative values which implies the change of direction of the time series. The PACF still shows that the first and second lags are signification. The values for P may fall within 1 or 2. 
+
+```{r}
+Electric_Vehicle_Population_Total_ts_diff2 <- diff(Electric_Vehicle_Population_Total_ts, differences = 2)
+tsdisplay(Electric_Vehicle_Population_Total_ts_diff2)
+ndiffs(Electric_Vehicle_Population_Total_ts_diff2)
+kpss.test(Electric_Vehicle_Population_Total_ts_diff2)
+adf.test(Electric_Vehicle_Population_Total_ts_diff2)
+```
+
+## We now know that the d part in ARIMA (p,d,q) is 2. Now let's find p and q
+
+```{r}
+acf(Electric_Vehicle_Population_Total_ts_diff2, lag.max=20)
+Acf(Electric_Vehicle_Population_Total_ts_diff2, lag.max=20)
+```
+
+## Plot a correlogram
+
+```{r}
+Acf(Electric_Vehicle_Population_Total_ts_diff2, lag.max=20)
+Acf(Electric_Vehicle_Population_Total_ts_diff2, lag.max=20, plot=FALSE)
+```
+
+## Plot a partial correlogram
+
+```{r}
+Pacf(Electric_Vehicle_Population_Total_ts_diff2, lag.max=20)
+Pacf(Electric_Vehicle_Population_Total_ts_diff2, lag.max=20, plot=FALSE)
+```
+
+## Auto ARIMA, BIC and AIC
+
+#### Based on auto.arima function, the best model is ARIMA (2,2,0) (1,0,0) [12]. The AIC value is 1191.86 and BIC value is 1201.29. 
+
+```{r}
+auto_fit <- auto.arima(Electric_Vehicle_Population_Total_ts, approximation = FALSE, stepwise = FALSE, trace = TRUE)
+auto_fit
+attributes(auto_fit)
+```
+
+## Use arima and pass the values
+
+#### The value (2,2,0) is the non-seasonal part of the ARIMA model. The value (1,0,0) is the seasonal part of the ARIMA model. Since this time series does not indicate any seasonality, the value (1,0,0) cannot be used and returns an error. 
+
+```{r}
+Electric_Vehicle_Population_Total_ts_arima <- arima(Electric_Vehicle_Population_Total_ts, order=c(2,2,0))
+Electric_Vehicle_Population_Total_ts_arima
+
+fit_Arima <- Arima(Electric_Vehicle_Population_Total_ts, order=c(2,2,0))
+fit_Arima
+```
+
+## Forecast with different confidence intervals and different forecasting time periods
+
+#### The plot on the forecast shows the upward trend for the next 5 months or 12 months. It is a good model based on the plot. 
+
+```{r}
+forecast(fit_Arima, h=5, level = c(99.5))
+forecast(fit_Arima, h=5, level = c(95))
+forecast(fit_Arima, h=12, level = c(99.5))
+forecast(fit_Arima, h=12, level = c(95))
+forecast(fit_Arima, h=5)
+forecast(fit_Arima, h=12)
+plot(forecast(fit_Arima, h=5))
+plot(forecast(fit_Arima, h=12))
+```
+
+## Residual analysis for ARIMA forecast model
+
+#### The Acf plot for residuals shows that the residuals are not significant hence random. This histogram of the residuals looks like a normal curve where the most values for redisuals are centered around 0. 
+
+```{r}
+Acf(fit_Arima$residuals)
+Box.test(residuals(fit_Arima), lag=20, type="Ljung")
+plot.ts(residuals(fit_Arima))
+hist(fit_Arima$residuals)
+tsdiag(fit_Arima)
+```
+
+## Accuracy for ARIMA forecast model
+
+#### The MAPE of ARIMA forecast model is 0.5321711, which is pretty low. However, among all other forecasting models used to forecast this time series, Moving Average with order 3 still shows the lowest MAPE, 0.2403089. ARIMA is the second best forecasting model as compared to the remaining forecast modes. 
+
+```{r}
+accuracy (fit_Arima)
+```
